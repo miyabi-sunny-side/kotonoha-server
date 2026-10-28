@@ -98,7 +98,7 @@ curl -s localhost:5013/mask -H "Authorization: Bearer $KEY" -H 'content-type: ap
 | `project` | 案件名・プロジェクト名・コードネーム | Gemma |
 | `internal_id` | 社員番号・顧客番号・チケット番号など社内の ID | Gemma |
 
-型の決まった区分は、上の形に当てはまるものを正規表現で拾い、Gemma の答えに左右されません。
+型の決まった区分は、上の形に当てはまるものを Gemma を介さず正規表現で拾います。
 Gemma には型の無い区分だけを JSON Schema で
 配列の形に強制して答えさせ、入力に現れない文字列と 1 文字以下の文字列は捨てます。
 候補が重なれば長い方を残し、同じ範囲なら正規表現の区分を採ります。
@@ -146,8 +146,8 @@ Gemma 4 の thinking は 3 つの窓口とも止めています（`chat_template
 | 窓口 | thinking | 理由 |
 |---|---|---|
 | `/mask` | なし | `eval/mask/` の 5 件で、thinking なしの区分ごとの再現率は 93〜100%。thinking ありは 1 件目で推論だけで 8192 token を使い切った |
-| `/structure` | なし | 作り物の請求書の画像で読み取った値は同じで、thinking ありは 40 秒、なしは 22 秒 |
-| `/transcript` | なし | 作り物の会議の文字起こしで結果は同等で、thinking ありは 36 秒、なしは 4 秒 |
+| `/structure` | なし | 作り物の請求書の画像で読み取った金額・日付・明細は同じで、thinking ありは 40 秒、なしは 22 秒 |
+| `/transcript` | なし | 作り物の会議の文字起こしで、発言の分け方と要点の件数は同じで、thinking ありは 36 秒、なしは 4 秒 |
 
 ## 長い入力
 
