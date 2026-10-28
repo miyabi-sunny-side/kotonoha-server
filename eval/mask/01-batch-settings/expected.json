@@ -1,0 +1,18 @@
+[
+  {"text": "高橋 健太", "type": "person"},
+  {"text": "基盤チーム", "type": "company"},
+  {"text": "渡辺 美咲", "type": "person"},
+  {"text": "株式会社ミナトロジスティクス", "type": "company"},
+  {"text": "みなと物流DX", "type": "project"},
+  {"text": "10.12.34.56", "type": "ip"},
+  {"text": "Mn7#xQ2v!pL9", "type": "secret"},
+  {"text": "https://orders.minato-logi.internal/api/v2", "type": "url"},
+  {"text": "sk-live-9fJ2kQ7xLm3Pz8RtYv4Wc6Nb", "type": "secret"},
+  {"text": "sftp01.mnt-corp.local", "type": "host"},
+  {"text": "kenta.takahashi@minato-logi.co.jp", "type": "mail"},
+  {"text": "ops-team@minato-logi.co.jp", "type": "mail"},
+  {"text": "渡辺", "type": "person"},
+  {"text": "080-2345-6789", "type": "phone"},
+  {"text": "EMP-004127", "type": "internal_id"},
+  {"text": "高橋", "type": "person"}
+]

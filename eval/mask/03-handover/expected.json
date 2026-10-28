@@ -1,0 +1,22 @@
+[
+  {"text": "オリオン", "type": "project"},
+  {"text": "小林 直樹", "type": "person"},
+  {"text": "情報システム部", "type": "company"},
+  {"text": "伊藤 さくら", "type": "person"},
+  {"text": "小林", "type": "person"},
+  {"text": "naoki.kobayashi@hokuto-bank.co.jp", "type": "mail"},
+  {"text": "03-5123-4567", "type": "phone"},
+  {"text": "株式会社テクノブリッジ", "type": "company"},
+  {"text": "山本", "type": "person"},
+  {"text": "yamamoto@technobridge.example.jp", "type": "mail"},
+  {"text": "090-8765-4321", "type": "phone"},
+  {"text": "https://orion.hokuto-bank.local/login", "type": "url"},
+  {"text": "orion-batch01", "type": "host"},
+  {"text": "172.16.8.21", "type": "ip"},
+  {"text": "2001:db8:4a2b::17", "type": "ipv6"},
+  {"text": "Orion@2026init", "type": "secret"},
+  {"text": "KK-7781-0032", "type": "internal_id"},
+  {"text": "ORION-118", "type": "internal_id"},
+  {"text": "北斗銀行", "type": "company"},
+  {"text": "本店営業部", "type": "company"}
+]

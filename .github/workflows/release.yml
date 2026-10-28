@@ -1,0 +1,78 @@
+name: release
+
+# tag を契機に Linux x86_64 の binary を公開する。format・lint・test は手元の検証が持つ。
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TARGET: x86_64-unknown-linux-musl
+      ARTIFACT: kotonoha-server-linux-x86_64.tar.gz
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          targets: ${{ env.TARGET }}
+
+      - name: Install musl toolchain
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - name: Verify tag matches Cargo version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
+          test "v$version" = "$GITHUB_REF_NAME"
+
+      - name: Build release binary
+        run: cargo build --release --locked --target "$TARGET"
+
+      - name: Package artifact
+        run: |
+          cp "target/$TARGET/release/kotonoha-server" kotonoha-server
+          tar -czf "$ARTIFACT" kotonoha-server LICENSE
+          sha256sum "$ARTIFACT" > "$ARTIFACT.sha256"
+
+      # 梱包の書き忘れを同じ job で落とす: archive の内容と、取り出した
+      # binary が名乗る version を tag の版と突き合わせる。
+      - name: Verify archive contents
+        run: |
+          tar -tzf "$ARTIFACT" | sort > archive-contents
+          printf '%s\n' LICENSE kotonoha-server | sort | diff - archive-contents
+          check_dir="$(mktemp -d)"
+          tar -xzf "$ARTIFACT" -C "$check_dir"
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
+          test "$("$check_dir/kotonoha-server" --version)" = "kotonoha-server $version"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT }}
+          path: |
+            ${{ env.ARTIFACT }}
+            ${{ env.ARTIFACT }}.sha256
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*

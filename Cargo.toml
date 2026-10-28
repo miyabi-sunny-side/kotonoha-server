@@ -1,0 +1,39 @@
+[package]
+name = "kotonoha-server"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+description = "A Japanese text processing server backed by a local Gemma on llama-server"
+license = "MIT"
+repository = "https://github.com/miyabi-sunny-side/kotonoha-server"
+readme = "README.md"
+publish = false
+
+[dependencies]
+anyhow = "1.0.104"
+axum = "0.8.9"
+base64 = "0.23.1"
+regex = "1.13.1"
+reqwest = { version = "0.13.5", default-features = false, features = ["json"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "net", "rt-multi-thread", "signal", "process", "fs"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["fmt"] }
+
+[dev-dependencies]
+http-body-util = "0.1.5"
+tower = { version = "0.5.3", features = ["util"] }
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "warn"
+undocumented_unsafe_blocks = "warn"
+missing_assert_message = "warn"
+
+[profile.release]
+opt-level = 3
+lto = false
+strip = true
+codegen-units = 16

@@ -1,0 +1,14 @@
+[
+  {"text": "経理部", "type": "company"},
+  {"text": "佐々木 由美", "type": "person"},
+  {"text": "FIN-2291", "type": "internal_id"},
+  {"text": "C-00872", "type": "internal_id"},
+  {"text": "有限会社さくら製作所", "type": "company"},
+  {"text": "C-01544", "type": "internal_id"},
+  {"text": "東邦精機株式会社", "type": "company"},
+  {"text": "S10458", "type": "internal_id"},
+  {"text": "中村 翔", "type": "person"},
+  {"text": "rpt-db02.hq.sakura-net.lan", "type": "host"},
+  {"text": "192.168.40.12", "type": "ip"},
+  {"text": "admin@sakura-net.lan", "type": "mail"}
+]

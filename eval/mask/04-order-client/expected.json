@@ -1,0 +1,12 @@
+[
+  {"text": "MAPLE", "type": "project"},
+  {"text": "松本 亮", "type": "person"},
+  {"text": "ryo.matsumoto@kaede-shoji.co.jp", "type": "mail"},
+  {"text": "丸山電機工業", "type": "company"},
+  {"text": "http://maple-api.kaede.intra:8080/v1/orders", "type": "url"},
+  {"text": "10.200.3.14", "type": "ip"},
+  {"text": "ghp_R8xT2mK9vQ4wL7nP3sZ6yB1cD5fH0jA2eG4u", "type": "secret"},
+  {"text": "K2034871", "type": "internal_id"},
+  {"text": "松本", "type": "person"},
+  {"text": "森田", "type": "person"}
+]

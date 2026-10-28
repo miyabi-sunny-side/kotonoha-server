@@ -1,0 +1,21 @@
+[
+  {"text": "田村 恵子", "type": "person"},
+  {"text": "Kevin Brown", "type": "person"},
+  {"text": "ACME Japan", "type": "company"},
+  {"text": "岡田 大輔", "type": "person"},
+  {"text": "西川", "type": "person"},
+  {"text": "Project Aurora", "type": "project"},
+  {"text": "田村", "type": "person"},
+  {"text": "Kevin", "type": "person"},
+  {"text": "ACME", "type": "company"},
+  {"text": "aurora-gw.acme-jp.corp", "type": "host"},
+  {"text": "fd12:3456:789a::42", "type": "ipv6"},
+  {"text": "岡田", "type": "person"},
+  {"text": "192.168.120.7", "type": "ip"},
+  {"text": "INC-2026-04417", "type": "internal_id"},
+  {"text": "佐藤", "type": "person"},
+  {"text": "keiko.tamura@nishikaze.co.jp", "type": "mail"},
+  {"text": "西風運輸株式会社", "type": "company"},
+  {"text": "総務部", "type": "company"},
+  {"text": "045-321-9876", "type": "phone"}
+]
