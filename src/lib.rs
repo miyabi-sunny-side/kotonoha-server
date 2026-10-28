@@ -6,5 +6,6 @@ pub mod error;
 pub mod eval;
 pub mod llm;
 pub mod mask;
+pub mod relay;
 pub mod structure;
 pub mod transcript;

@@ -3,6 +3,7 @@ use std::net::{Ipv4Addr, SocketAddr};
 use anyhow::Context;
 use kotonoha_server::config::{self, Config};
 use kotonoha_server::llm::LlamaServer;
+use kotonoha_server::relay::Relay;
 use kotonoha_server::{app, auth};
 
 #[tokio::main]
@@ -29,10 +30,11 @@ async fn main() -> anyhow::Result<()> {
     );
 
     let llm = LlamaServer::new(&config.llama_server_url)?;
+    let relay = Relay::new(&config.llama_server_url)?;
     let addr = SocketAddr::from((Ipv4Addr::UNSPECIFIED, config.port));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     tracing::info!(%addr, upstream = %config.llama_server_url, keys = keys.len(), "listening");
-    axum::serve(listener, app::router(llm, keys))
+    axum::serve(listener, app::router(llm, relay, keys))
         .with_graceful_shutdown(shutdown())
         .await?;
     Ok(())

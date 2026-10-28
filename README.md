@@ -6,11 +6,13 @@
 - `POST /mask`: ソースコードや文書から、伏せるべき文字列と区分を返す
 - `POST /structure`: 文章・画像・PDF を、渡した JSON Schema どおりの JSON にする
 - `POST /transcript`: 文字起こしの生の文を整え、話者ごとの発言と要点にする
+- `POST /v1/chat/completions`・`GET /v1/models`・`POST /v1/messages`: 鍵を確かめて llama-server へ中継する。
+  OpenAI・Anthropic の client のまま Gemma を呼べる
 
 ## 必要な環境
 
 - Linux x86_64 のマシン
-- OpenAI 互換の `/v1/chat/completions` と JSON Schema の構造化出力を持つ
+- OpenAI 互換の `/v1/chat/completions`・Anthropic 互換の `/v1/messages` と JSON Schema の構造化出力を持つ
   [llama-server](https://github.com/ggml-org/llama.cpp)。Gemma 4 のような画像を読めるモデルと
   `--mmproj` の部品を載せ、`--jinja` で起動したもの。上流は HTTP だけに対応します。
 - PDF を読むなら poppler の `pdftoppm` を `PATH` に置く
@@ -58,12 +60,13 @@ chmod 600 ~/.config/kotonoha-server/api-keys
 
 ```sh
 curl -s localhost:5013/health   # {"status":"ok","version":"0.1.0"}
-KEY=$(grep -v '^#' ~/.config/kotonoha-server/api-keys | head -1)
+export KEY=$(grep -v '^#' ~/.config/kotonoha-server/api-keys | head -1)
 ```
 
 ## 呼び出す
 
-`/health` 以外は `Authorization: Bearer <鍵>` が要ります。鍵が無い・違う要求には 401 を返します。
+`/health` 以外は鍵が要ります。`Authorization: Bearer <鍵>`（OpenAI 形式）と
+`x-api-key: <鍵>`（Anthropic 形式）のどちらでも受けます。鍵が無い・違う要求には 401 を返します。
 誤った要求は 400、上流の失敗や壊れた答えは 502 で、どちらも `{"error": "…"}` を返します。
 
 ### /mask
@@ -139,9 +142,54 @@ PDF は頁ごとに 150 dpi の PNG にして渡し、20 頁を超えるもの�
 `text` は `segments` を並べた本文で、話者が 2 人以上なら行頭に話者を付けます。
 話者が分からない発言の `speaker` は「不明」です。
 
+### OpenAI・Anthropic 形式の API
+
+`/v1/chat/completions`・`/v1/models` は OpenAI 形式、`/v1/messages` は Anthropic 形式の窓口です。
+鍵を確かめてから、llama-server の同じ path へ中継します。
+SDK には base URL と鍵を設定します。OpenAI の SDK は鍵を `Authorization: Bearer` で、
+Anthropic の SDK は `x-api-key` で送ります。
+
+| SDK | base URL |
+|---|---|
+| OpenAI | `http://localhost:5013/v1` |
+| Anthropic | `http://localhost:5013` |
+
+```sh
+curl -s localhost:5013/v1/chat/completions -H "Authorization: Bearer $KEY" -H 'content-type: application/json' \
+  -d '{"model": "gemma-4-26b-a4b", "messages": [{"role": "user", "content": "日本の首都はどこですか。"}],
+       "chat_template_kwargs": {"enable_thinking": false}}'
+```
+
+Python の SDK（`pip install openai anthropic`）では次のように呼びます。
+
+```python
+import os
+import anthropic, openai
+
+key = os.environ["KEY"]
+no_thinking = {"chat_template_kwargs": {"enable_thinking": False}}
+
+o = openai.OpenAI(base_url="http://localhost:5013/v1", api_key=key)
+r = o.chat.completions.create(model="gemma-4-26b-a4b", max_tokens=200, extra_body=no_thinking,
+                              messages=[{"role": "user", "content": "日本の首都はどこですか。"}])
+print(r.choices[0].message.content)
+
+a = anthropic.Anthropic(base_url="http://localhost:5013", api_key=key)
+m = a.messages.create(model="gemma-4-26b-a4b", max_tokens=200, extra_body=no_thinking,
+                      messages=[{"role": "user", "content": "富士山の高さは？"}])
+print(m.content[0].text)
+```
+
+本文・query と `Content-Type`・`Accept` の header を上流へ渡し、上流の status と本文を返します。
+`"stream": true` の答えは、上流が送った片を届いた順にすぐ返します。kotonoha の鍵は上流へ渡しません。
+上流に届かなければ 502 です。`model` の名前は `/v1/models` が返すものを使います。
+llama-server は既定で thinking します。止めるには上の例のように `chat_template_kwargs` を付けます。
+
 ## thinking
 
-Gemma 4 の thinking は 3 つの窓口とも止めています（`chat_template_kwargs.enable_thinking=false`）。
+`/mask`・`/structure`・`/transcript` では、Gemma 4 の thinking を止めています。
+止め方は `chat_template_kwargs.enable_thinking=false` です。
+`/v1/` の中継は要求のとおりです。
 
 | 窓口 | thinking | 理由 |
 |---|---|---|
